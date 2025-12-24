@@ -8,7 +8,9 @@
 #include "G4UImanager.hh"
 #include "G4VisExecutive.hh"
 #include "G4UIExecutive.hh"
-#include "Shielding.hh"
+#include "G4PhysListFactory.hh"
+#include "G4VModularPhysicsList.hh"
+#include "G4RadioactiveDecayPhysics.hh"
 
 //-------------------------------------------------------------------------------
   int main( int argc, char** argv )
@@ -21,7 +23,10 @@
    runManager->SetUserInitialization( new Geometry{} );
 
 // Set up mandatory user initialization: Physics-List
-   runManager->SetUserInitialization( new Shielding{} );
+   G4PhysListFactory factory{};
+   G4VModularPhysicsList* physicsList = factory.GetReferencePhysList( "FTFP_BERT" );
+   physicsList->RegisterPhysics( new G4RadioactiveDecayPhysics{} );
+   runManager->SetUserInitialization( physicsList );
 
 // Set up user initialization: User Actions
    runManager->SetUserInitialization( new UserActionInitialization{} );
